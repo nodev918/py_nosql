@@ -19,12 +19,6 @@ gogo()
 
 
 
-
-
-
-
-
-
 def handle_put():
     return "hello put"
 def handle_get():

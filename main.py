@@ -18,31 +18,7 @@ DATA = {}
 
 
  
-def main():
-    SOCKET.bind((HOST, PORT))
-    SOCKET.listen(1)
-    while 1:
-        connection, address = SOCKET.accept()
-        print("New connection from [{}]".format(address))
-        data = connection.recv(4096).decode()
-        command, key, value = parse_message(data)
-        if command == 'STATS':
-            response = handle_stats()
-        elif command in ('GET', 'GETLIST', 'INCREMENT', 'DELETE'):
-            response = COMMAND_HANDERS[command](key)
-        elif command in (
-            'PUT',
-            'PUTLIST',
-            'APPEND', ):
-            response = COMMAND_HANDERS[command](key, value)
-        else:
-            response = (False, 'Unknown command type {}'.format(command))
-            update_stats(command, response[0])
-            connection.sandall('{}:{}'.format(response[0], response[1]))
-            connection.close()
-    
-if __name__ == '__main__':
-    main()  
+
 
 
 def parse_message(data):
@@ -110,7 +86,31 @@ def handle_delete(key):
 def handle_stats():
     return (True, str(STATS))
 
-
+def main():
+    SOCKET.bind((HOST, PORT))
+    SOCKET.listen(1)
+    while 1:
+        connection, address = SOCKET.accept()
+        print("New connection from [{}]".format(address))
+        data = connection.recv(4096).decode()
+        command, key, value = parse_message(data)
+        if command == 'STATS':
+            response = handle_stats()
+        elif command in ('GET', 'GETLIST', 'INCREMENT', 'DELETE'):
+            response = COMMAND_HANDERS[command](key)
+        elif command in (
+            'PUT',
+            'PUTLIST',
+            'APPEND', ):
+            response = COMMAND_HANDERS[command](key, value)
+        else:
+            response = (False, 'Unknown command type {}'.format(command))
+            update_stats(command, response[0])
+            connection.sandall('{}:{}'.format(response[0], response[1]))
+            connection.close()
+    
+if __name__ == '__main__':
+    main()  
 
    
 COMMAND_HANDERS = {
